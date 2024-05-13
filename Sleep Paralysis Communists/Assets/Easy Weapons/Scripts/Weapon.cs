@@ -554,10 +554,12 @@ public class Weapon : MonoBehaviour
 		// Ammo Display
 		if (showCurrentAmmo)
 		{
+			GUIStyle font = new GUIStyle();
+			font.fontSize = 32;
 			if (type == WeaponType.Raycast || type == WeaponType.Projectile)
-				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Ammo: " + currentAmmo);
+				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Ammo: " + currentAmmo, font);
 			else if (type == WeaponType.Beam)
-				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Heat: " + (int)(beamHeat * 100) + "/" + (int)(maxBeamHeat * 100));
+				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Heat: " + (int)(beamHeat * 100) + "/" + (int)(maxBeamHeat * 100), font);
 		}
 	}
 
