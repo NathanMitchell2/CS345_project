@@ -1058,12 +1058,17 @@ public class Weapon : MonoBehaviour
 	// Reload the weapon
 	void Reload()
 	{
-		currentAmmo = ammoCapacity;
+		StartCoroutine(delayAmmoGain());
 		fireTimer = -reloadTime;
 		GetComponent<AudioSource>().PlayOneShot(reloadSound);
 
 		// Send a messsage so that users can do other actions whenever this happens
 		SendMessageUpwards("OnEasyWeaponsReload", SendMessageOptions.DontRequireReceiver);
+	}
+
+	IEnumerator delayAmmoGain() {
+		yield return new WaitForSeconds(reloadTime);
+		currentAmmo = ammoCapacity;
 	}
 
 	// When the weapon tries to fire without any ammo
