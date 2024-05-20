@@ -1132,6 +1132,10 @@ public class Weapon : MonoBehaviour
 
         return hitMesh;
     }
+
+	public int getCurrentAmmo() {
+		return currentAmmo;
+	}
 }
 
 
