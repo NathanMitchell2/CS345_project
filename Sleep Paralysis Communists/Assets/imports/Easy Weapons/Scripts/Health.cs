@@ -5,27 +5,28 @@
 /// make sure that it is called "Health".  If it is not, you may need to edit code
 /// referencing the Health component from other scripts
 /// </summary>
-
 using UnityEngine;
 using System.Collections;
+using TMPro; // Import TextMeshPro
+using UnityEngine.SceneManagement;
 
 public class Health : MonoBehaviour
 {
-	public bool canDie = true;					// Whether or not this health can die
-	
-	public float startingHealth = 100.0f;		// The amount of health to start with
-	public float maxHealth = 100.0f;			// The maximum amount of health
-	private float currentHealth;				// The current ammount of health
+	public bool canDie = true;                  // Whether or not this health can die
 
-	public bool replaceWhenDead = false;		// Whether or not a dead replacement should be instantiated.  (Useful for breaking/shattering/exploding effects)
-	public GameObject deadReplacement;			// The prefab to instantiate when this GameObject dies
-	public bool makeExplosion = false;			// Whether or not an explosion prefab should be instantiated
-	public GameObject explosion;				// The explosion prefab to be instantiated
+	public float startingHealth = 100.0f;       // The amount of health to start with
+	public float maxHealth = 100.0f;            // The maximum amount of health
+	private float currentHealth;                // The current ammount of health
 
-	public bool isPlayer = false;				// Whether or not this health is the player
-	public GameObject deathCam;					// The camera to activate when the player dies
+	public bool replaceWhenDead = false;        // Whether or not a dead replacement should be instantiated.  (Useful for breaking/shattering/exploding effects)
+	public GameObject deadReplacement;          // The prefab to instantiate when this GameObject dies
+	public bool makeExplosion = false;          // Whether or not an explosion prefab should be instantiated
+	public GameObject explosion;                // The explosion prefab to be instantiated
 
-	private bool dead = false;					// Used to make sure the Die() function isn't called twice
+	public bool isPlayer = false;               // Whether or not this health is the player
+	public GameObject deathCam;                 // The camera to activate when the player dies
+
+	private bool dead = false;                  // Used to make sure the Die() function isn't called twice
 
 	// Use this for initialization
 	void Start()
@@ -64,5 +65,19 @@ public class Health : MonoBehaviour
 
 		// Remove this GameObject from the scene
 		Destroy(gameObject);
+
+		if (isPlayer)
+		{
+			GoToNextScene();
+		}
+	}
+
+	void GoToNextScene()
+	{
+		// Get the index of the current scene
+		int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+		// Load the next scene
+		SceneManager.LoadScene(currentSceneIndex - 1);
 	}
 }
