@@ -28,11 +28,14 @@ public class Health : MonoBehaviour
 
 	private bool dead = false;                  // Used to make sure the Die() function isn't called twice
 
+	[SerializeField] HealthBar healthBar;
+
 	// Use this for initialization
 	void Start()
 	{
 		// Initialize the currentHealth variable to the value specified by the user in startingHealth
 		currentHealth = startingHealth;
+		healthBar = GetComponentInChildren<HealthBar>();
 	}
 
 	public void ChangeHealth(float amount)
@@ -40,6 +43,7 @@ public class Health : MonoBehaviour
 		// Change the health by the amount specified in the amount variable
 		currentHealth += amount;
 
+		healthBar.UpdateHealthBar(currentHealth, maxHealth);
 		// If the health runs out, then Die.
 		if (currentHealth <= 0 && !dead && canDie)
 			Die();
