@@ -554,12 +554,10 @@ public class Weapon : MonoBehaviour
 		// Ammo Display
 		if (showCurrentAmmo)
 		{
-			GUIStyle font = new GUIStyle();
-			font.fontSize = 32;
 			if (type == WeaponType.Raycast || type == WeaponType.Projectile)
-				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Ammo: " + currentAmmo, font);
+				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Ammo: " + currentAmmo);
 			else if (type == WeaponType.Beam)
-				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Heat: " + (int)(beamHeat * 100) + "/" + (int)(maxBeamHeat * 100), font);
+				GUI.Label(new Rect(10, Screen.height - 30, 100, 20), "Heat: " + (int)(beamHeat * 100) + "/" + (int)(maxBeamHeat * 100));
 		}
 	}
 
@@ -1058,17 +1056,12 @@ public class Weapon : MonoBehaviour
 	// Reload the weapon
 	void Reload()
 	{
-		StartCoroutine(delayAmmoGain());
+		currentAmmo = ammoCapacity;
 		fireTimer = -reloadTime;
 		GetComponent<AudioSource>().PlayOneShot(reloadSound);
 
 		// Send a messsage so that users can do other actions whenever this happens
 		SendMessageUpwards("OnEasyWeaponsReload", SendMessageOptions.DontRequireReceiver);
-	}
-
-	IEnumerator delayAmmoGain() {
-		yield return new WaitForSeconds(reloadTime);
-		currentAmmo = ammoCapacity;
 	}
 
 	// When the weapon tries to fire without any ammo
@@ -1132,10 +1125,6 @@ public class Weapon : MonoBehaviour
 
         return hitMesh;
     }
-
-	public int getCurrentAmmo() {
-		return currentAmmo;
-	}
 }
 
 

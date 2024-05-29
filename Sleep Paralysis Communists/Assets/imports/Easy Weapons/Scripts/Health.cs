@@ -1,87 +1,116 @@
-﻿/// <summary>
-/// Health.cs
-/// Author: MutantGopher
-/// This is a sample health script.  If you use a different script for health,
-/// make sure that it is called "Health".  If it is not, you may need to edit code
-/// referencing the Health component from other scripts
-/// </summary>
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using TMPro; // Import TextMeshPro
 using UnityEngine.SceneManagement;
 
 public class Health : MonoBehaviour
 {
-	public bool canDie = true;                  // Whether or not this health can die
+    public bool canDie = true;
+    public float startingHealth = 100.0f;
+    public float maxHealth = 100.0f;
+    private float currentHealth;
 
-	public float startingHealth = 100.0f;       // The amount of health to start with
-	public float maxHealth = 100.0f;            // The maximum amount of health
-	private float currentHealth;                // The current ammount of health
+    public bool replaceWhenDead = false;
+    public GameObject deadReplacement;
+    public bool makeExplosion = false;
+    public GameObject explosion;
 
-	public bool replaceWhenDead = false;        // Whether or not a dead replacement should be instantiated.  (Useful for breaking/shattering/exploding effects)
-	public GameObject deadReplacement;          // The prefab to instantiate when this GameObject dies
-	public bool makeExplosion = false;          // Whether or not an explosion prefab should be instantiated
-	public GameObject explosion;                // The explosion prefab to be instantiated
+    public bool isPlayer = false;
+    public GameObject deathCam;
 
-	public bool isPlayer = false;               // Whether or not this health is the player
-	public GameObject deathCam;                 // The camera to activate when the player dies
+    private bool dead = false;
+    private int currentKills = 0;
+    private bool upgraded = false;
 
-	private bool dead = false;                  // Used to make sure the Die() function isn't called twice
+    public TMPObjectMovement tmpMovementScript;
 
-	[SerializeField] HealthBar healthBar;
+    // Reference to the TMP_Text component where the health will be displayed
+    public TMP_Text healthText;
+    public TMP_Text killCounter;
 
-	// Use this for initialization
-	void Start()
-	{
-		// Initialize the currentHealth variable to the value specified by the user in startingHealth
-		currentHealth = startingHealth;
-		healthBar = GetComponentInChildren<HealthBar>();
-	}
+    void Start()
+    {
+        currentHealth = startingHealth;
+        UpdateHealthUI(); // Update the health UI when the game starts
+    }
 
-	public void ChangeHealth(float amount)
-	{
-		// Change the health by the amount specified in the amount variable
-		currentHealth += amount;
+    void Update()
+    {
+        Debug.Log(currentKills);
+        Debug.Log(upgraded);
+        if (int.Parse(killCounter.text) == 2 && !upgraded)
+        {
+            tmpMovementScript.MoveDownAndUp();
+            Debug.Log("Reached 20 kills. Triggering TMP movement.");
+            upgraded = true;
 
-		healthBar.UpdateHealthBar(currentHealth, maxHealth);
-		// If the health runs out, then Die.
-		if (currentHealth <= 0 && !dead && canDie)
-			Die();
+            GameObject pistol = transform.Find("Pistol").gameObject;
+            if (pistol != null)
+            {
+                // Disable the "Pistol" GameObject
+                pistol.SetActive(false);
+            }
 
-		// Make sure that the health never exceeds the maximum health
-		else if (currentHealth > maxHealth)
-			currentHealth = maxHealth;
-	}
+            // Check if the GameObject "FullAutoPistol" exists
+            GameObject fullAutoPistol = transform.Find("FullAutoPistol").gameObject;
+            if (fullAutoPistol != null)
+            {
+                // Enable the "FullAutoPistol" GameObject
+                fullAutoPistol.SetActive(true);
+            }
+        }
+    }
 
-	public void Die()
-	{
-		// This GameObject is officially dead.  This is used to make sure the Die() function isn't called again
-		dead = true;
+    public void ChangeHealth(float amount)
+    {
+        currentHealth += amount;
 
-		// Make death effects
-		if (replaceWhenDead)
-			Instantiate(deadReplacement, transform.position, transform.rotation);
-		if (makeExplosion)
-			Instantiate(explosion, transform.position, transform.rotation);
+        if (currentHealth <= 0 && !dead && canDie)
+            Die();
+        else if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
 
-		if (isPlayer && deathCam != null)
-			deathCam.SetActive(true);
+        UpdateHealthUI(); // Update the health UI after changing health
+    }
 
-		// Remove this GameObject from the scene
-		Destroy(gameObject);
+    public void Die()
+    {
+        dead = true;
 
-		if (isPlayer)
-		{
-			GoToNextScene();
-		}
-	}
+        if (replaceWhenDead)
+            Instantiate(deadReplacement, transform.position, transform.rotation);
+        if (makeExplosion)
+            Instantiate(explosion, transform.position, transform.rotation);
 
-	void GoToNextScene()
-	{
-		// Get the index of the current scene
-		int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        if (isPlayer && deathCam != null)
+            deathCam.SetActive(true);
+            GoToNextScene();
 
-		// Load the next scene
-		SceneManager.LoadScene(currentSceneIndex - 1);
-	}
+        if (killCounter != null && !isPlayer)
+        {
+            currentKills = int.Parse(killCounter.text);
+            currentKills++;
+            killCounter.text = currentKills.ToString();
+        }
+
+        Destroy(gameObject);
+    }
+
+    void UpdateHealthUI()
+    {
+        if (healthText != null)
+        {
+            // Update TMP text to display current health
+            healthText.text = "Health: " + currentHealth.ToString();
+        }
+    }
+
+    void GoToNextScene()
+    {
+        // Get the index of the current scene
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        // Load the next scene
+        SceneManager.LoadScene(currentSceneIndex - 1);
+    }
 }
