@@ -1,48 +1,52 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject prefabToSpawn;
-    public float minSpawnInterval = 2f;
-    public float maxSpawnInterval = 5f;
-    public float timeScaleFactor = 0.1f; // Adjusts how quickly spawn frequency increases over time
-    public float maxScaleMultiplier = 2f; // Maximum scale multiplier for spawned prefabs
-    private float timer;
-    private float elapsedTime;
+    public GameObject soldierPrefab;
+    public GameObject sergeantPrefab;
+    public float spawnInterval = 1.0f;
+    public float sergeantSpawnChanceIncrement = 0.01f; // Incremental increase in sergeant spawn chance per second
+    private float sergeantSpawnChance = 0.0f; // Initial sergeant spawn chance
 
     private void Start()
     {
-        timer = Random.Range(minSpawnInterval, maxSpawnInterval);
+        StartCoroutine(SpawnEnemyRoutine());
     }
 
-    private void Update()
+    private IEnumerator SpawnEnemyRoutine()
     {
-        elapsedTime += Time.deltaTime;
-
-        if (elapsedTime >= timer)
+        while (true)
         {
-            SpawnPrefab();
-
-            // Adjust spawn timer
-            timer = Random.Range(minSpawnInterval, maxSpawnInterval);
-            // Decrease minSpawnInterval and maxSpawnInterval over time
-            minSpawnInterval *= 1 - timeScaleFactor;
-            maxSpawnInterval *= 1 - timeScaleFactor;
-
-            // Ensure spawn intervals don't go below 0.5 seconds
-            minSpawnInterval = Mathf.Max(0.5f, minSpawnInterval);
-            maxSpawnInterval = Mathf.Max(0.5f, maxSpawnInterval);
-
-            // Increase the scale of the prefab
-            float scaleFactor = Mathf.Min(1f + elapsedTime * timeScaleFactor, maxScaleMultiplier);
-            prefabToSpawn.transform.localScale *= scaleFactor;
-
-            elapsedTime = 0f;
+            SpawnEnemy();
+            yield return new WaitForSeconds(spawnInterval);
+            IncreaseSergeantSpawnChance();
         }
     }
 
-    private void SpawnPrefab()
+    private void SpawnEnemy()
     {
-        Instantiate(prefabToSpawn, transform.position, Quaternion.identity);
+        Transform spawnPoint = GetRandomSpawnPoint();
+        if (spawnPoint != null)
+        {
+            GameObject enemyPrefab = Random.value < sergeantSpawnChance ? sergeantPrefab : soldierPrefab;
+            Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+        }
+    }
+
+    private Transform GetRandomSpawnPoint()
+    {
+        int childCount = transform.childCount;
+        if (childCount == 0) return null;
+
+        int randomIndex = Random.Range(0, childCount);
+        return transform.GetChild(randomIndex);
+    }
+
+    private void IncreaseSergeantSpawnChance()
+    {
+        sergeantSpawnChance += sergeantSpawnChanceIncrement;
+        sergeantSpawnChance = Mathf.Clamp(sergeantSpawnChance, 0.0f, 1.0f); // Clamp the value to ensure it stays between 0 and 1
     }
 }

@@ -22,16 +22,16 @@ public class Health : MonoBehaviour
     private int currentKills = 0;
     private bool upgraded = false;
 
-    public TMPObjectMovement tmpMovementScript;
-
     // Reference to the TMP_Text component where the health will be displayed
     public TMP_Text healthText;
     public TMP_Text killCounter;
+    [SerializeField] HealthBar healthBar;
 
     void Start()
     {
         currentHealth = startingHealth;
         UpdateHealthUI(); // Update the health UI when the game starts
+        healthBar = GetComponentInChildren<HealthBar>();
     }
 
     void Update()
@@ -40,7 +40,6 @@ public class Health : MonoBehaviour
         Debug.Log(upgraded);
         if (int.Parse(killCounter.text) == 2 && !upgraded)
         {
-            tmpMovementScript.MoveDownAndUp();
             Debug.Log("Reached 20 kills. Triggering TMP movement.");
             upgraded = true;
 
@@ -64,6 +63,8 @@ public class Health : MonoBehaviour
     public void ChangeHealth(float amount)
     {
         currentHealth += amount;
+
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
 
         if (currentHealth <= 0 && !dead && canDie)
             Die();

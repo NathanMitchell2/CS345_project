@@ -16,11 +16,18 @@ public class EnemyChase : MonoBehaviour
 
     void Update()
     {
-        // Direction towards the player
-        Vector3 direction = (player.position - transform.position).normalized;
+        if (player != null)
+        {
+            // Direction towards the player
+            Vector3 direction = (player.position - transform.position).normalized;
 
-        // Move towards the player
-        rb.MovePosition(transform.position + direction * moveSpeed * Time.deltaTime);
+            // Rotate to look at the player
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * moveSpeed);
+
+            // Move towards the player
+            rb.MovePosition(transform.position + direction * moveSpeed * Time.deltaTime);
+        }
     }
 
     void OnCollisionEnter(Collision collision)
