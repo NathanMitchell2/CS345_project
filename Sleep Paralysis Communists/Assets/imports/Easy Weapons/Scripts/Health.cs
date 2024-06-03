@@ -38,7 +38,7 @@ public class Health : MonoBehaviour
     {
         Debug.Log(currentKills);
         Debug.Log(upgraded);
-        if (int.Parse(killCounter.text) == 2 && !upgraded)
+        if (int.Parse(killCounter.text) == 2 && !upgraded && isPlayer)
         {
             Debug.Log("Reached 20 kills. Triggering TMP movement.");
             upgraded = true;
@@ -102,7 +102,7 @@ public class Health : MonoBehaviour
         if (healthText != null)
         {
             // Update TMP text to display current health
-            healthText.text = "Health: " + currentHealth.ToString();
+            healthText.text = currentHealth.ToString();
         }
     }
 

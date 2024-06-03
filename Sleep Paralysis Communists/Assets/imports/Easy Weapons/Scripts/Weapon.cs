@@ -565,6 +565,7 @@ public class Weapon : MonoBehaviour
 	// Raycasting system
 	void Fire()
 	{
+		
 		// Reset the fireTimer to 0 (for ROF)
 		fireTimer = 0.0f;
 
@@ -603,6 +604,7 @@ public class Weapon : MonoBehaviour
 			// The ray that will be used for this shot
 			Ray ray = new Ray(raycastStartSpot.position, direction);
 			RaycastHit hit;
+			
 
 			if (Physics.Raycast(ray, out hit, range))
 			{
