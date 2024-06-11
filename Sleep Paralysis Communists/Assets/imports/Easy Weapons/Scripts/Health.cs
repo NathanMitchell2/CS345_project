@@ -85,7 +85,7 @@ public class Health : MonoBehaviour
 
         if (isPlayer && deathCam != null)
             deathCam.SetActive(true);
-            GoToNextScene();
+            //GoToNextScene();
 
         if (killCounter != null && !isPlayer)
         {
